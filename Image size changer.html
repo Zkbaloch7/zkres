@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resolution Setter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+        #canvasContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            height: 600px;
+            border: 1px solid black;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        #setResolution {
+            background-color: #4CAF50; /* Green */
+        }
+        #saveImage {
+            background-color: #008CBA; /* Blue */
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        input[type="file"], input[type="number"] {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: gradient 3s infinite;
+            background-size: 300% 300%;
+        }
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Resolution Changer</h1>
+    <div class="logo">Made by ZK BALOCH</div>
+    <input type="file" id="upload" accept="image/*">
+    <br><br>
+    <label for="width">Width: </label>
+    <input type="number" id="width" placeholder="Width">
+    <label for="height">Height: </label>
+    <input type="number" id="height" placeholder="Height">
+    <br><br>
+    <button id="setResolution">Set Resolution</button>
+    <button id="saveImage" class="hidden">Save Image</button>
+    <br><br>
+    <div id="canvasContainer" class="hidden">
+        <canvas id="canvas"></canvas>
+    </div>
+    <div class="logo">Made by ZK BALOCH</div>
+
+    <script>
+        const upload = document.getElementById('upload');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+        const setResolutionButton = document.getElementById('setResolution');
+        const saveImageButton = document.getElementById('saveImage');
+        const canvasContainer = document.getElementById('canvasContainer');
+
+        let img = new Image();
+
+        upload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                img.onload = function() {
+                    widthInput.value = img.width;
+                    heightInput.value = img.height;
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    canvasContainer.classList.remove('hidden');
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        setResolutionButton.addEventListener('click', () => {
+            const width = parseInt(widthInput.value);
+            const height = parseInt(heightInput.value);
+
+            if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+                canvas.width = width;
+                canvas.height = height;
+                ctx.clearRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+                saveImageButton.classList.remove('hidden');
+                canvasContainer.classList.remove('hidden');
+            } else {
+                alert('Please enter valid width and height values.');
+            }
+        });
+
+        saveImageButton.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'resized_image.png';
+            link.click();
+        });
+    </script>
+</body>
+</html>
